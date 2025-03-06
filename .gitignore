@@ -1,21 +1,26 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 /.pnp
-.pnp.*
+.pnp.js
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
+!.yarn/sdks
 !.yarn/versions
 
 # testing
 /coverage
+/.nyc_output
 
 # next.js
 /.next/
 /out/
+/build
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
 # production
 /build
@@ -30,12 +35,42 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# local env files
+.env
+.env*.local
+.env.development
+.env.test
+.env.production
 
 # vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# PWA
+**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/fallback-*.js
+**/public/precache.*.js
+
+# storybook
+/storybook-static
+
+# IDE
+/.idea
+/.vscode
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
+
+# Package manager locks (uncomment if you want to ignore)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# cache directories
+.npm
+.eslintcache
+.stylelintcache
