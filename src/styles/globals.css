@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ededed;
+  --primary: #3485c6;
+  --primary-dark: #163b58;
+  --text: #56565B;
+}
+
+body {
+  background-color: var(--background);
+  min-height: 100vh;
+  margin: 0;
+}
+
+h1 {
+  font-family: var(--font-indie-pimp);
+  color: var(--primary);
+  font-size: 2.25rem;
+}
+
+h2 {
+  font-family: var(--font-mk-abel);
+  color: var(--primary-dark);
+  font-size: 1.5rem;
+}
+
+p {
+  font-family: var(--font-mk-abel);
+  font-size: 1.125rem;
+  color: var(--text);
+}
+
+
+/* Ajoutez ces styles à votre fichier globals.css */
+
+.prose {
+  @apply text-sm;
+}
+
+.prose strong {
+  @apply font-bold text-inherit;
+}
+
+.prose em {
+  @apply italic text-inherit;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  @apply font-bold text-inherit;
+  @apply my-2;
+}
+
+.prose h1 {
+  @apply text-xl;
+}
+
+.prose h2 {
+  @apply text-lg;
+}
+
+.prose h3 {
+  @apply text-base;
+}
+
+.prose ul {
+  @apply list-disc list-inside;
+}
+
+.prose ol {
+  @apply list-decimal list-inside;
+}
+
+.prose p {
+  @apply mb-2;
+}
+
+.prose a {
+  @apply text-blue-500 hover:text-blue-700 underline;
+}
+
+/* Support du mode sombre */
+.dark .prose {
+  @apply text-white;
+}
+
+.dark .prose a {
+  @apply text-blue-400 hover:text-blue-300;
+}
