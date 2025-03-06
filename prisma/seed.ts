@@ -5,11 +5,11 @@ import { hash } from 'bcrypt'
 const prisma = new PrismaClient()
 
 const defaultAdmin = {
- email: 'contact@sheldon-dev.fr',
+ email: 'admin@aloha.sauvetage',
  nom: 'Admin',
  prenom: 'Super',
  role: 'SUPER_ADMIN' as const,
- password: 'BC1986bc**'
+ password: 'admin1234**'
 }
 
 const emailTemplates = [
