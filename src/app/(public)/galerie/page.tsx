@@ -4,11 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Camera, Activity, Users, Clock, ZoomIn, X, Filter } from 'lucide-react';
 import { Spinner } from "@nextui-org/react";
-import { Category, GalleryImage, CategoryImages } from '@/lib/api';
+import { Category, GalleryImage } from '@/lib/api';
 import { 
   useGallery, 
   useRandomGallery, 
-  useGalleryBySpecificCategory 
+  useFormationsGallery,
+  useSauvetageSportifGallery,
+  useEvenementsGallery
 } from '@/hooks/useGallery';
 
 interface CategoryType {
@@ -59,27 +61,78 @@ export default function Gallery() {
     setIsLoaded(true);
   }, []);
   
-  // Récupération des images de la galerie selon la catégorie
+  // Récupération de toutes les images
   const { 
-    data: galleryData, 
-    isLoading, 
-    error 
-  } = activeCategory === 'all'
-    ? useGallery({ mode: 'all', staleTime: 10 * 60 * 1000, enabled: true })
-    : useGalleryBySpecificCategory(activeCategory as Category, { staleTime: 10 * 60 * 1000, enabled: true });
+    data: allGalleryData, 
+    isLoading: isLoadingAll,
+  } = useGallery({ mode: 'all', staleTime: 10 * 60 * 1000, enabled: activeCategory === 'all' });
 
-  // Normalisation des données pour s'assurer que galleryImages est toujours un tableau de GalleryImage[]
-  const galleryImages: GalleryImage[] = Array.isArray(galleryData)
-    ? galleryData.every(item => 'id' in item && 'url' in item && 'alt' in item)
-      ? galleryData as GalleryImage[]
-      : (galleryData as CategoryImages[]).flatMap(category => category.images)
-    : [];
+  // Récupération spécifique par catégorie
+  const { 
+    data: formationsImages = [], 
+    isLoading: isLoadingFormations 
+  } = useFormationsGallery({ staleTime: 10 * 60 * 1000, enabled: activeCategory === 'Formations' });
+  
+  const { 
+    data: sauvetageImages = [], 
+    isLoading: isLoadingSauvetage 
+  } = useSauvetageSportifGallery({ staleTime: 10 * 60 * 1000, enabled: activeCategory === 'Sauvetage_Sportif' });
+  
+  const { 
+    data: evenementsImages = [], 
+    isLoading: isLoadingEvenements 
+  } = useEvenementsGallery({ staleTime: 10 * 60 * 1000, enabled: activeCategory === 'Evenements' });
   
   // Récupération des images aléatoires pour le slider
   const { 
     data: randomImages = [], 
     isLoading: isLoadingRandom 
   } = useRandomGallery({ staleTime: 10 * 60 * 1000, enabled: true });
+  
+  // Déterminer les images à afficher en fonction de la catégorie active
+  const galleryImages: GalleryImage[] = (() => {
+    if (activeCategory === 'all' && allGalleryData) {
+      // Normalisation des données pour s'assurer que galleryImages est toujours un tableau de GalleryImage[]
+      if (Array.isArray(allGalleryData)) {
+        if (allGalleryData.length === 0) return [];
+        
+        // Type guard pour vérifier si c'est un tableau de CategoryImages
+        const isCategoryImagesArray = (data: any[]): data is { category: Category; images: GalleryImage[] }[] => {
+          return data.length > 0 && 'images' in data[0] && Array.isArray(data[0].images);
+        };
+        
+        // Type guard pour vérifier si c'est un tableau de GalleryImage
+        const isGalleryImageArray = (data: any[]): data is GalleryImage[] => {
+          return data.length > 0 && 'url' in data[0] && 'id' in data[0];
+        };
+        
+        if (isGalleryImageArray(allGalleryData)) {
+          return allGalleryData;
+        }
+        
+        if (isCategoryImagesArray(allGalleryData)) {
+          return allGalleryData.flatMap(category => category.images);
+        }
+      }
+      return [];
+    } else if (activeCategory === 'Formations') {
+      return formationsImages;
+    } else if (activeCategory === 'Sauvetage_Sportif') {
+      return sauvetageImages;
+    } else if (activeCategory === 'Evenements') {
+      return evenementsImages;
+    }
+    return [];
+  })();
+  
+  // État de chargement global
+  const isLoading = activeCategory === 'all' 
+    ? isLoadingAll 
+    : activeCategory === 'Formations' 
+      ? isLoadingFormations 
+      : activeCategory === 'Sauvetage_Sportif' 
+        ? isLoadingSauvetage 
+        : isLoadingEvenements;
   
   // Images aléatoires pour le carrousel (limité à 5)
   const sliderImages = randomImages.length > 0 
@@ -257,14 +310,6 @@ export default function Gallery() {
           {isLoading ? (
             <div className="flex justify-center items-center h-48 bg-white/50 backdrop-blur-sm rounded-xl shadow-md">
               <Spinner size="lg" color="primary" />
-            </div>
-          ) : error ? (
-            <div className="text-center p-8 bg-red-50 rounded-xl border border-red-200 shadow-md">
-              <div className="bg-red-100 rounded-full mx-auto p-3 w-16 h-16 mb-4 flex items-center justify-center">
-                <X className="text-red-500 w-8 h-8" />
-              </div>
-              <p className="text-xl font-semibold text-red-700 mb-2">Une erreur est survenue</p>
-              <p className="text-red-600">Impossible de charger les images. Veuillez réessayer plus tard.</p>
             </div>
           ) : galleryImages.length === 0 ? (
             <div className="text-center p-8 bg-blue-50 rounded-xl border border-blue-200 shadow-md">
