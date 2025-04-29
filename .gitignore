@@ -41,6 +41,7 @@ yarn-error.log*
 .env.development
 .env.test
 .env.production
+.env.local
 
 # vercel
 .vercel
@@ -72,5 +73,6 @@ logs
 
 # cache directories
 .npm
+.next
 .eslintcache
 .stylelintcache

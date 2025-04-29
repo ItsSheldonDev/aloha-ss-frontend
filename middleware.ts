@@ -1,34 +1,20 @@
-import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
+// middleware.ts
+import { NextRequest, NextResponse } from 'next/server';
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token;
-    const isAuth = !!token;
-    const isAuthPage = req.nextUrl.pathname.startsWith('/admin');
-    const isUsersPage = req.nextUrl.pathname.startsWith('/admin/settings/users');
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('token')?.value;
 
-    if (isAuthPage) {
-      if (isAuth && req.nextUrl.pathname === '/admin') {
-        return NextResponse.redirect(new URL('/admin/dashboard', req.url));
-      }
-
-      if (isUsersPage && token?.role !== 'SUPER_ADMIN') {
-        return NextResponse.redirect(new URL('/admin/dashboard', req.url));
-      }
-
-      return null;
-    }
-
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token
-    },
+  if (!token && request.nextUrl.pathname.startsWith('/admin') && request.nextUrl.pathname !== '/admin') {
+    return NextResponse.redirect(new URL('/admin', request.url));
   }
-);
+
+  if (token && request.nextUrl.pathname === '/admin') {
+    return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/admin/:path*']
+  matcher: '/admin/:path*',
 };

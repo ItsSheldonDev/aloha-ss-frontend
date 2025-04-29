@@ -1,35 +1,20 @@
-"use client"
+// src/app/(public)/ssa/page.tsx
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useRandomGallery } from '@/hooks/useGallery';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Clock, CheckSquare, AlertCircle, BookOpen, ArrowRight } from 'lucide-react';
 
-interface GalleryImage {
-  id: string;
-  filename: string;
-  alt: string;
-  category: string;
-  url: string;
-}
-
 export default function SSA() {
-  const [randomImage, setRandomImage] = useState<GalleryImage | null>(null);
+  // Utilisation du hook useRandomGallery pour récupérer une image aléatoire
+  const { data: randomImages, isLoading } = useRandomGallery({
+    staleTime: 60 * 60 * 1000, // 1 heure, comme dans votre version originale
+    enabled: true,            // Activer la requête par défaut
+  });
 
-  useEffect(() => {
-    const fetchRandomImage = async () => {
-      try {
-        const response = await fetch('/api/gallery?mode=random');
-        if (!response.ok) throw new Error('Erreur lors du chargement des images');
-        const data = await response.json();
-        setRandomImage(data[0]);
-      } catch (error) {
-        console.error('Erreur:', error);
-      }
-    };
-
-    fetchRandomImage();
-  }, []);
+  // Prendre la première image aléatoire si disponible
+  const randomImage = randomImages && randomImages.length > 0 ? randomImages[0] : null;
 
   return (
     <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-100 to-white">
@@ -99,18 +84,23 @@ export default function SSA() {
         {/* Section Informations pratiques et Image */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Image aléatoire */}
-          {randomImage && (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
-              <div className="p-6">
-                <h2 className="text-2xl font-semibold text-[#0e5399] mb-4">
-                  Nos formations en images
-                </h2>
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-105">
+            <div className="p-6">
+              <h2 className="text-2xl font-semibold text-[#0e5399] mb-4">
+                Nos formations en images
+              </h2>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-48">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#0e5399]"></div>
+                </div>
+              ) : randomImage ? (
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg">
                   <Image
                     src={randomImage.url}
                     alt={randomImage.alt}
                     fill
                     className="object-cover transition-transform duration-300 hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
                     <p className="absolute bottom-4 left-4 text-white text-sm">
@@ -118,18 +108,22 @@ export default function SSA() {
                     </p>
                   </div>
                 </div>
-                <div className="mt-4 text-center">
-                  <Link
-                    href="/galerie"
-                    className="inline-flex items-center gap-2 text-[#0e5399] hover:text-blue-700 text-sm"
-                  >
-                    Voir toute la galerie
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
+              ) : (
+                <p className="text-gray-600 text-sm text-center">
+                  Aucune image disponible pour le moment.
+                </p>
+              )}
+              <div className="mt-4 text-center">
+                <Link
+                  href="/galerie"
+                  className="inline-flex items-center gap-2 text-[#0e5399] hover:text-blue-700 text-sm"
+                >
+                  Voir toute la galerie
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Informations pratiques */}
           <div className="bg-white rounded-xl shadow-lg p-6 transition-transform duration-300 hover:scale-105">
@@ -216,7 +210,7 @@ export default function SSA() {
         {/* Bouton d'inscription */}
         <div className="text-center mt-8">
           <Link
-            href="/inscription?formation=ssa"
+            href="/agenda"
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#0e5399] text-white
                      rounded-full hover:bg-blue-700 transition-all duration-300
                      transform hover:-translate-y-1 shadow-lg hover:shadow-xl
