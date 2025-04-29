@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -23,8 +24,7 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /var/www/aloha-admin
-            nvm use 23
             git pull origin prod
-            bun install
-            bun run build
-            pm2 restart Aloha-Front --update-env
+            npm install
+            npm run build
+            pm2 restart Aloha-Admin --update-env
