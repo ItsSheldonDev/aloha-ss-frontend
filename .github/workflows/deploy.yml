@@ -23,7 +23,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /var/www/aloha-admin
+            cd /var/www/aloha-front
             nvm use 23
             git pull origin prod
             bun install
