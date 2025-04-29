@@ -24,7 +24,8 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /var/www/aloha-admin
+            nvm use 23
             git pull origin prod
-            npm install
-            npm run build
-            pm2 restart Aloha-Admin --update-env
+            bun install
+            bun run build
+            pm2 restart Aloha-Front --update-env
