@@ -26,6 +26,7 @@ import { Spinner } from '@nextui-org/react';
 import { useNews } from '@/hooks/useNews';
 import { useSauvetageSportifMutation } from '@/hooks/useInscriptions';
 import { NewsItem } from '@/lib/api';
+import { logos } from '@/lib/images'; // Import des logos
 
 interface FormData {
   firstname: string;
@@ -269,6 +270,15 @@ export default function SauvetageSportif() {
                   <span>Plus d'infos sur la FFSS</span>
                   <ExternalLink className="w-4 h-4 transform transition-transform duration-300 group-hover:translate-x-1" />
                 </a>
+
+                {/* Nouveau bouton pour les stages */}
+                <Link 
+                  href="/sauvetage-sportif/stages"
+                  className="flex items-center justify-center gap-2 mt-4 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full hover:from-blue-500 hover:to-blue-600 transition-all duration-300 shadow-lg transform hover:-translate-y-1 group"
+                >
+                  <span>Découvrir nos stages</span>
+                  <ArrowRight className="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
               </div>
             </div>
             
@@ -503,11 +513,12 @@ export default function SauvetageSportif() {
             </div>
           </div>
 
-          {/* Colonne 3: Actualités */}
+          {/* Colonne 3: Actualités et Logos */}
           <div 
-            className={`md:col-span-1 transition-all duration-700 delay-300 ease-out 
+            className={`md:col-span-1 space-y-8 transition-all duration-700 delay-300 ease-out 
                       ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
           >
+            {/* Bloc Actualités */}
             <div className="bg-white rounded-xl shadow-xl border border-blue-100 overflow-hidden">
               {/* Entête avec gradient */}
               <div className="bg-gradient-to-r from-blue-600 to-blue-500 p-4 relative overflow-hidden">
@@ -572,6 +583,58 @@ export default function SauvetageSportif() {
                     </p>
                   </div>
                 )}
+              </div>
+            </div>
+            
+            {/* Nouveau bloc pour les logos */}
+            <div className="bg-white rounded-xl shadow-xl border border-blue-100 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-700 to-blue-600 p-4 relative overflow-hidden">
+                <div className="relative z-10">
+                  <h2 className="text-2xl font-mk-abel text-white flex items-center gap-2">
+                    <Shield className="w-5 h-5" />
+                    <span>Nos accréditations</span>
+                  </h2>
+                  <p className="text-blue-100 text-sm">Organismes officiels et certifications</p>
+                </div>
+                
+                {/* Effet vague */}
+                <div className="absolute bottom-0 left-0 right-0 h-6 opacity-30">
+                  <svg viewBox="0 0 800 200" preserveAspectRatio="none" className="w-full h-full">
+                    <path d="M 0 100 Q 200 150 400 100 Q 600 50 800 100 L 800 200 L 0 200 Z" fill="white" />
+                  </svg>
+                </div>
+              </div>
+              
+              <div className="p-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="flex flex-col items-center">
+                    <div className="relative h-32 w-full">
+                      <Image 
+                        src={logos.ffss}
+                        alt="Logo FFSS - Fédération Française de Sauvetage et Secourisme"
+                        fill
+                        style={{ objectFit: 'contain' }}
+                      />
+                    </div>
+                    <p className="mt-3 text-center text-sm text-gray-600">
+                      Fédération Française de Sauvetage et Secourisme
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-col items-center">
+                    <div className="relative h-32 w-full">
+                      <Image 
+                        src={logos.secucivile}
+                        alt="Logo Sécurité Civile"
+                        fill
+                        style={{ objectFit: 'contain' }}
+                      />
+                    </div>
+                    <p className="mt-3 text-center text-sm text-gray-600">
+                      Sécurité Civile
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

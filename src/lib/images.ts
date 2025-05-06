@@ -8,6 +8,7 @@ export const logos = {
     thieu: '/images/logos/thieu.png',
     ess: '/images/logos/logo_ess.png',
     qualiopi: '/images/logos/qualiopi.png',
+    secucivile: '/images/logos/sc.jpg'
   } as const;
 
   // Formation images paths
